@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mining AOI Detection - Map</title>
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet"/>
+  <style>
+    body, html { margin:0; padding:0; height:100%; }
+    #map { width:100%; height:100vh; }
+    .panel { position:absolute; top:10px; left:10px; background:white; padding:8px; border-radius:6px; z-index:2; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <strong>Mining AOI Detection</strong><br/>
+    - Place <code>user_aoi.geojson</code> and run <code>detect_mining_aoi.py</code><br/>
+    - Then refresh this page to see outputs.
+  </div>
+  <div id="map"></div>
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <script>
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://demotiles.maplibre.org/style.json',
+      center: [77, 20],
+      zoom: 5
+    });
+
+    map.on('load', () => {
+      // User AOI (if exists)
+      fetch('/data/user_aoi.geojson').then(r=> r.ok ? r.json() : null).then(data=>{
+        if(data) {
+          map.addSource('user_aoi', {type:'geojson', data:data});
+          map.addLayer({id:'user_aoi-fill', type:'fill', source:'user_aoi', paint: {'fill-color':'#088','fill-opacity':0.2}});
+          map.addLayer({id:'user_aoi-line', type:'line', source:'user_aoi', paint: {'line-color':'#088','line-width':2}});
+          const coords = data.features[0].geometry.coordinates[0];
+          const lon = coords[0][0], lat = coords[0][1];
+          map.setCenter([lon, lat]);
+          map.setZoom(12);
+        }
+      });
+
+      // Detected polygons
+      fetch('/data/detected_polygons.geojson').then(r=> r.ok ? r.json() : null).then(data=>{
+        if(data) {
+          map.addSource('detected', {type:'geojson', data:data});
+          map.addLayer({id:'detected-fill', type:'fill', source:'detected', paint: {'fill-color':'#f00','fill-opacity':0.35}});
+          map.addLayer({id:'detected-line', type:'line', source:'detected', paint: {'line-color':'#900','line-width':2}});
+        }
+      });
+
+      // Outside polygons
+      fetch('/data/detected_outside.geojson').then(r=> r.ok ? r.json() : null).then(data=>{
+        if(data) {
+          map.addSource('outside', {type:'geojson', data:data});
+          map.addLayer({id:'outside-fill', type:'fill', source:'outside', paint: {'fill-color':'#ff9800','fill-opacity':0.5}});
+          map.addLayer({id:'outside-line', type:'line', source:'outside', paint: {'line-color':'#ff5722','line-width':2}});
+        }
+      });
+    });
+  </script>
+</body>
+</html>

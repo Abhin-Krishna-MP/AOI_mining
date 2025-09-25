@@ -1,0 +1,8 @@
+sentinelhub
+rasterio
+geopandas
+shapely
+numpy
+scikit-image
+fiona
+flask
