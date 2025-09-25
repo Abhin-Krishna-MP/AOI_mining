@@ -1,0 +1,47 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-122.41, 37.79],
+          [-122.36, 37.79],
+          [-122.36, 37.74],
+          [-122.41, 37.74],
+          [-122.41, 37.79]
+        ]]
+      },
+      "properties": {
+        "name": "Authorized Mining Zone A",
+        "permit_id": "MZ-2024-001",
+        "authority": "Mining Regulatory Authority",
+        "valid_from": "2024-01-01",
+        "valid_until": "2024-12-31",
+        "max_depth_allowed": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-122.35, 37.76],
+          [-122.32, 37.76],
+          [-122.32, 37.735],
+          [-122.35, 37.735],
+          [-122.35, 37.76]
+        ]]
+      },
+      "properties": {
+        "name": "Authorized Mining Zone B",
+        "permit_id": "MZ-2024-002",
+        "authority": "Mining Regulatory Authority",
+        "valid_from": "2024-01-15",
+        "valid_until": "2024-12-31",
+        "max_depth_allowed": 25
+      }
+    }
+  ]
+}

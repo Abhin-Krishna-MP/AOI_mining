@@ -1,0 +1,68 @@
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* Tab-specific styles */
+.tab-content {
+  min-height: 60vh;
+}
+
+.tab-trigger {
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-trigger:hover {
+  transform: translateY(-1px);
+}
+
+/* Custom scrollbar for tab content if needed */
+.tab-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tab-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.tab-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Smooth transitions for tab switching */
+.tab-transition {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Header section styling */
+.header-section {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Content container adjustments */
+.content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Responsive tab list */
+@media (max-width: 768px) {
+  .tab-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .tab-trigger {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+}

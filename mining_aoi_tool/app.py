@@ -13,12 +13,21 @@ import json
 def index():
     return render_template('index.html')
 
+
 @app.route('/data/<path:filename>')
 def data_files(filename):
     # Ensure data directory exists
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
-    return send_from_directory(DATA_DIR, filename)
+    file_path = os.path.join(DATA_DIR, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(DATA_DIR, filename)
+    # Return valid empty GeoJSON or JSON if file is missing
+    if filename.endswith('.geojson'):
+        return jsonify({"type": "FeatureCollection", "features": []})
+    if filename.endswith('.json'):
+        return jsonify({})
+    return '', 404
 
 
 # Endpoint to accept AOI from frontend, save, and run detection

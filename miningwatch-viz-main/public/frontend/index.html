@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiningWatch Detection Results</title>
+    <meta name="description" content="MiningWatch detection results visualization showing legal and illegal mining activities">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>MiningWatch Detection Results</h1>
+        <p>Mining activity detection and compliance monitoring</p>
+    </header>
+
+    <main>
+        <div class="controls">
+            <div class="control-group">
+                <h3>Layer Controls</h3>
+                <label>
+                    <input type="checkbox" id="toggleResults" checked>
+                    Mining Detection Results
+                </label>
+                <label>
+                    <input type="checkbox" id="toggleAOI" checked>
+                    Area of Interest (AOI)
+                </label>
+            </div>
+            
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <div class="legend-color legal"></div>
+                    <span>Legal Mining (Inside AOI)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color illegal"></div>
+                    <span>Illegal Mining (Outside AOI)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color aoi"></div>
+                    <span>Area of Interest Boundary</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </main>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Turf.js for spatial operations -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
