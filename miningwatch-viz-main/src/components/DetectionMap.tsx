@@ -12,6 +12,8 @@ export interface DetectionStats {
   detected_area_m2: number;
   outside_area_m2: number;
   pct_outside: number;
+  time_start?: string;
+  time_end?: string;
 }
 
 const DetectionMap: React.FC<DetectionMapProps> = ({ onStatsUpdate }) => {

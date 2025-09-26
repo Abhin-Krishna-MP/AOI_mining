@@ -25,6 +25,10 @@ import React, { useRef, useState } from "react";
 const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [stats, setStats] = useState<DetectionStats | null>(null);
+  const [mapKey, setMapKey] = useState(0);
+  const handleDetectMining = () => {
+    setMapKey((k) => k + 1);
+  };
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header with Title and Main Action */}
@@ -121,21 +125,9 @@ const Index = () => {
                       </Button>
                     </div>
                     
-                    <div className="space-y-3">
-                      <label className="text-sm font-inter font-semibold">Satellite Dates</label>
-                      <div className="space-y-2">
-                        <Button variant="outline" size="sm" className="w-full justify-start">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Before: 2024-01-15
-                        </Button>
-                        <Button variant="outline" size="sm" className="w-full justify-start">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          After: 2024-03-15
-                        </Button>
-                      </div>
-                    </div>
+                    {/* Satellite Dates fields removed as requested */}
                     
-                    <Button className="w-full bg-accent hover:bg-accent/90">
+                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleDetectMining}>
                       <Target className="w-4 h-4 mr-2" />
                       Detect Mining Activity
                     </Button>
@@ -153,7 +145,7 @@ const Index = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="h-full relative p-0">
-                    <DetectionMap onStatsUpdate={setStats} />
+                    <DetectionMap key={mapKey} onStatsUpdate={setStats} />
                   </CardContent>
                 </Card>
               </div>

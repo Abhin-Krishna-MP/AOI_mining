@@ -176,11 +176,15 @@ print(f"Detected area: {detected_area_m2:.0f} m², Outside lease: {outside_area_
 
 # Write comparison results for frontend sidebar
 import json
+time_start = os.getenv('TIME_START', '2025-09-01')
+time_end = os.getenv('TIME_END', '2025-09-25')
 with open('data/comparison.json', 'w') as f:
     json.dump({
         "detected_area_m2": round(detected_area_m2, 2),
         "outside_area_m2": round(outside_area_m2, 2),
-        "pct_outside": round(pct_outside, 2)
+        "pct_outside": round(pct_outside, 2),
+        "time_start": time_start,
+        "time_end": time_end
     }, f)
 
 # Save outputs
