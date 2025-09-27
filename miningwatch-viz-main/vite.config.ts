@@ -10,6 +10,8 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       '/data': 'http://localhost:5000',
+      '/upload-dem': 'http://localhost:5000',
+      '/static': 'http://localhost:5000',
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),

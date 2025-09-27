@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import HeightmapViewer from "../components/HeightmapViewer";
+import VolumeBox from "../components/VolumeBox";
+import DEM3DPanel from "../components/DEM3DPanel";
+import axios from "axios";
+import React, { useState, useRef } from "react";
+
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -20,7 +27,6 @@ import {
   TrendingUp
 } from "lucide-react";
 import DetectionMap, { DetectionStats } from "@/components/DetectionMap";
-import React, { useRef, useState } from "react";
 
 const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -118,11 +124,6 @@ const Index = () => {
                           e.target.value = "";
                         }}
                       />
-                      <label className="text-sm font-inter font-semibold">Upload DEM</label>
-                      <Button variant="outline" className="w-full justify-start">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Select Digital Elevation Model
-                      </Button>
                     </div>
                     
                     {/* Satellite Dates fields removed as requested */}
@@ -194,30 +195,42 @@ const Index = () => {
               <h2 className="text-4xl md:text-5xl font-bold font-poppins mb-4">3D Terrain Visualization</h2>
               <p className="text-xl font-inter text-muted-foreground">Interactive 3D analysis of mining activity</p>
             </div>
-            
-            <Card className="mb-8">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="font-poppins flex items-center">
-                    <Box className="w-5 h-5 mr-2" />
-                    3D Mining Analysis
-                  </CardTitle>
-                  <Button variant="outline" size="sm">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Toggle 2D/3D
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-96 bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Box className="w-20 h-20 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-lg font-inter text-muted-foreground">3D Terrain Renderer</p>
-                    <p className="text-sm text-muted-foreground mt-2">Interactive rotation, zoom, and pan controls</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid lg:grid-cols-12 gap-8">
+              {/* 3D Visualization State */}
+              {(() => {
+                const [demResult, setDemResult] = React.useState<any>(null);
+                return (
+                  <>
+                    <div className="lg:col-span-8">
+                      <Card className="shadow-lg">
+                        <CardHeader>
+                          <CardTitle className="font-poppins flex items-center">
+                            <Box className="w-5 h-5 mr-2" />
+                            3D Mining Analysis
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <DEM3DPanel result={demResult} setResult={setDemResult} />
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <div className="lg:col-span-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="font-poppins flex items-center">
+                            <BarChart3 className="w-5 h-5 mr-2" />
+                            Volume & Diff Stats
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <DEM3DPanel showStatsOnly result={demResult} />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </TabsContent>
 
           {/* Reports Tab */}
