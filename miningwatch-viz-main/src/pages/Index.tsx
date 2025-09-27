@@ -28,13 +28,139 @@ import {
 } from "lucide-react";
 import DetectionMap, { DetectionStats } from "@/components/DetectionMap";
 
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
 const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [stats, setStats] = useState<DetectionStats | null>(null);
+  const [demResult, setDemResult] = useState<any>(null);
   const [mapKey, setMapKey] = useState(0);
   const handleDetectMining = () => {
     setMapKey((k) => k + 1);
   };
+
+  // PDF generation logic
+  const handleDownloadPDF = async () => {
+    const doc = new jsPDF();
+    // Title Page
+    doc.setFontSize(22);
+    doc.setTextColor(40, 40, 80);
+    doc.text("Government of India", 105, 30, { align: "center" });
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Ministry of Mines", 105, 40, { align: "center" });
+    doc.setFontSize(16);
+    doc.text("Automated Mining Activity Detection Report", 105, 55, { align: "center" });
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleString()}`, 105, 65, { align: "center" });
+    doc.setDrawColor(100, 100, 100);
+    doc.line(40, 70, 170, 70);
+    doc.setFontSize(11);
+    doc.text("Prepared by: Advanced Mining Detection Platform", 105, 80, { align: "center" });
+    doc.text("(For official use only)", 105, 90, { align: "center" });
+    doc.addPage();
+
+    // Executive Summary
+    let y = 20;
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 80);
+    doc.text("Executive Summary", 15, y);
+    y += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text("This report provides an automated analysis of mining activity within the specified Area of Interest (AOI),", 15, y);
+    y += 6;
+    doc.text("using advanced satellite imagery and digital elevation models. The findings include detected mining extents,", 15, y);
+    y += 6;
+    doc.text("volumetric changes, and compliance with legal boundaries.", 15, y);
+    y += 12;
+
+    // Section: 2D Dashboard Data
+    doc.setFontSize(14);
+    doc.setTextColor(40, 40, 80);
+    doc.text("1. Detected Mining Area (2D Analysis)", 15, y);
+    y += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    if (stats) {
+      doc.text(`Detected Area: ${(stats.detected_area_m2 / 1e6).toFixed(2)} km²`, 20, y);
+      y += 6;
+      doc.text(`Outside AOI: ${(stats.outside_area_m2 / 1e6).toFixed(2)} km²`, 20, y);
+      y += 6;
+      doc.text(`Percent Outside AOI: ${stats.pct_outside} %`, 20, y);
+      y += 8;
+    } else {
+      doc.text("No 2D dashboard data available.", 20, y);
+      y += 8;
+    }
+
+    // Section: 3D Volume & Diff Stats
+    doc.setFontSize(14);
+    doc.setTextColor(40, 40, 80);
+    doc.text("2. Terrain Change & Volume Analysis (3D)", 15, y);
+    y += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    if (demResult) {
+      doc.text(`Estimated Volume Change: ${demResult.volume_m3?.toLocaleString(undefined, {maximumFractionDigits:2})} m³`, 20, y);
+      y += 6;
+      doc.text(`Maximum Elevation Difference: ${demResult.max_diff?.toFixed(2)} m`, 20, y);
+      y += 6;
+      doc.text(`Minimum Elevation Difference: ${demResult.min_diff?.toFixed(2)} m`, 20, y);
+      y += 6;
+      doc.text(`Mean Elevation Difference: ${demResult.mean_diff?.toFixed(2)} m`, 20, y);
+      y += 8;
+    } else {
+      doc.text("No 3D terrain analysis data available.", 20, y);
+      y += 8;
+    }
+
+    // Section: Compliance Statement
+    doc.setFontSize(14);
+    doc.setTextColor(40, 40, 80);
+    doc.text("3. Legal Compliance Statement", 15, y);
+    y += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text("The detected mining activities have been compared against the official AOI boundaries.", 20, y);
+    y += 6;
+    if (stats) {
+      if (stats.pct_outside > 0) {
+        doc.text("Warning: Mining detected outside legal AOI. Immediate review recommended.", 20, y);
+        y += 6;
+      } else {
+        doc.text("All detected mining activities are within the legal AOI.", 20, y);
+        y += 6;
+      }
+    } else {
+      doc.text("Insufficient data for compliance assessment.", 20, y);
+      y += 6;
+    }
+    y += 8;
+
+    // Section: Methodology
+    doc.setFontSize(14);
+    doc.setTextColor(40, 40, 80);
+    doc.text("4. Methodology", 15, y);
+    y += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text("- Satellite imagery and digital elevation models were processed using AI algorithms.", 20, y);
+    y += 6;
+    doc.text("- Detected mining extents and volumetric changes were calculated automatically.", 20, y);
+    y += 6;
+    doc.text("- Results are subject to verification by authorized personnel.", 20, y);
+    y += 10;
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(120, 120, 120);
+    doc.text("This is a system-generated report. For queries, contact the Ministry of Mines.", 105, 285, { align: "center" });
+
+    doc.save("mining_report.pdf");
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header with Title and Main Action */}
@@ -196,40 +322,32 @@ const Index = () => {
               <p className="text-xl font-inter text-muted-foreground">Interactive 3D analysis of mining activity</p>
             </div>
             <div className="grid lg:grid-cols-12 gap-8">
-              {/* 3D Visualization State */}
-              {(() => {
-                const [demResult, setDemResult] = React.useState<any>(null);
-                return (
-                  <>
-                    <div className="lg:col-span-8">
-                      <Card className="shadow-lg">
-                        <CardHeader>
-                          <CardTitle className="font-poppins flex items-center">
-                            <Box className="w-5 h-5 mr-2" />
-                            3D Mining Analysis
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <DEM3DPanel result={demResult} setResult={setDemResult} />
-                        </CardContent>
-                      </Card>
-                    </div>
-                    <div className="lg:col-span-4">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="font-poppins flex items-center">
-                            <BarChart3 className="w-5 h-5 mr-2" />
-                            Volume & Diff Stats
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <DEM3DPanel showStatsOnly result={demResult} />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </>
-                );
-              })()}
+              <div className="lg:col-span-8">
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="font-poppins flex items-center">
+                      <Box className="w-5 h-5 mr-2" />
+                      3D Mining Analysis
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <DEM3DPanel result={demResult} setResult={setDemResult} />
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="lg:col-span-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-poppins flex items-center">
+                      <BarChart3 className="w-5 h-5 mr-2" />
+                      Volume & Diff Stats
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <DEM3DPanel showStatsOnly result={demResult} />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
@@ -273,7 +391,7 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-accent hover:bg-accent/90">
+              <Button size="lg" className="bg-accent hover:bg-accent/90" onClick={handleDownloadPDF}>
                 <Download className="w-5 h-5 mr-2" />
                 Download PDF Report
               </Button>
